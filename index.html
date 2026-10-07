@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar Laboral — Carlos Zúñiga</title>
+<style>
+  :root {
+    --blue: #1a5276;
+    --blue-light: #2e86c1;
+    --blue-pale: #eaf4fb;
+    --green: #1e8449;
+    --green-light: #d4efdf;
+    --gray: #5d6d7e;
+    --bg: #f4f6f9;
+    --white: #ffffff;
+    --border: #d5e8f5;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(26,82,118,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--blue);
+    color: #fff;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  .nav-brand { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .nav-brand span { color: #aed6f1; font-weight: 400; font-size: 14px; margin-left: 8px; }
+  .nav-date { font-size: 13px; color: #aed6f1; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    color: #fff;
+    padding: 32px 24px 28px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 26px; font-weight: 700; }
+  .hero p { font-size: 14px; color: #aed6f1; margin-top: 6px; }
+  .hero-badges { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: #fff;
+  }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--blue-light);
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--blue); }
+  .stat-label { font-size: 11px; color: var(--gray); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .filter-btn {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--gray);
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+  .filter-label { font-size: 12px; color: var(--gray); margin-right: 4px; }
+
+  /* SECTION TITLE */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--blue); }
+  .section-count { font-size: 12px; color: var(--gray); }
+
+  /* JOB CARDS */
+  .jobs-grid { display: flex; flex-direction: column; gap: 16px; }
+  .job-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .job-card:hover { box-shadow: 0 6px 24px rgba(26,82,118,0.15); transform: translateY(-1px); }
+  .job-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .company-logo {
+    width: 46px; height: 46px;
+    border-radius: 8px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .job-info { flex: 1; min-width: 0; }
+  .job-title-text { font-size: 15px; font-weight: 700; color: #1a1a2e; line-height: 1.3; }
+  .job-company-name { font-size: 13px; color: var(--blue-light); font-weight: 600; margin-top: 2px; }
+  .job-meta {
+    display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 6px; font-size: 12px; color: var(--gray);
+  }
+  .job-meta span { display: flex; align-items: center; gap: 3px; }
+  .tag {
+    display: inline-block;
+    background: var(--blue-pale);
+    border: 1px solid var(--border);
+    color: var(--blue);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tag.match-high { background: var(--green-light); border-color: #82e0aa; color: var(--green); font-weight: 600; }
+  .tag.match-med { background: #fef9e7; border-color: #f9e79f; color: #7d6608; }
+
+  .job-card-body { padding: 14px 20px; }
+  .job-description { font-size: 13px; color: #3d3d3d; line-height: 1.55; margin-bottom: 10px; }
+  .job-match-section { margin-bottom: 10px; }
+  .match-label { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .match-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .job-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #154360; }
+  .btn-secondary { background: var(--white); color: var(--blue); border: 1.5px solid var(--blue); }
+  .btn-secondary:hover { background: var(--blue-pale); }
+  .btn-pdf { background: #c0392b; color: #fff; }
+  .btn-pdf:hover { background: #922b21; }
+  .btn-pdf:disabled { background: #aaa; cursor: not-allowed; }
+
+  .match-score {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .score-bar-wrap { width: 80px; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 3px; }
+  .score-text { font-size: 12px; font-weight: 700; color: var(--blue); }
+
+  /* EMPTY / LOADING / ERROR */
+  .state-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .state-icon { font-size: 48px; margin-bottom: 12px; }
+  .state-title { font-size: 18px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+  .state-text { font-size: 14px; color: var(--gray); line-height: 1.6; }
+  .state-text a { color: var(--blue-light); }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 20px;
+    font-size: 11px; color: var(--gray);
+    border-top: 1px solid var(--border);
+    background: var(--white);
+  }
+
+  @media (max-width: 600px) {
+    .job-card-header { flex-direction: column; gap: 10px; }
+    .job-card-footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">🎯 Radar Laboral <span>Carlos Zúñiga Tobar</span></div>
+  <div class="nav-date" id="navDate">—</div>
+</nav>
+
+<div class="hero">
+  <h1>Oportunidades de Hoy</h1>
+  <p>Búsqueda automatizada diaria · CVs adaptados listos para descargar</p>
+  <div class="hero-badges">
+    <span class="badge">📊 Analytics &amp; BI</span>
+    <span class="badge">📡 Telecomunicaciones</span>
+    <span class="badge">⚙️ Operaciones &amp; Proyectos</span>
+    <span class="badge">🤖 IA &amp; Gestión</span>
+  </div>
+</div>
+
+<main>
+  <!-- STATS -->
+  <div class="stats" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">—</div>
+      <div class="stat-label">Empleos hoy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statHigh">—</div>
+      <div class="stat-label">Alta coincidencia</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statPdf">—</div>
+      <div class="stat-label">CVs listos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statUpdated">—</div>
+      <div class="stat-label">Última actualización</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <span class="filter-label">Filtrar:</span>
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="analytics">Analytics / BI</button>
+    <button class="filter-btn" data-filter="telecom">Telecomunicaciones</button>
+    <button class="filter-btn" data-filter="operaciones">Operaciones</button>
+    <button class="filter-btn" data-filter="ia">IA / Gestión</button>
+  </div>
+
+  <!-- JOBS LIST -->
+  <div class="section-header">
+    <div class="section-title">Empleos Encontrados</div>
+    <div class="section-count" id="jobCount"></div>
+  </div>
+  <div class="jobs-grid" id="jobsGrid">
+    <div class="state-card">
+      <div class="spinner"></div>
+      <div class="state-title">Cargando oportunidades…</div>
+      <div class="state-text">Conectando con el radar laboral.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Radar Laboral · Carlos Zúñiga Tobar · Actualización automática cada día hábil a las 8:00 AM (Santiago)
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIGURACIÓN — reemplazar con tu Gist ID y token (si quieres)
+// ══════════════════════════════════════════════════════════════
+const GIST_ID = 'e3893d99496290f4e388fa462d890b85';
+const DATA_URL = `https://gist.githubusercontent.com/carloszunigatobar-a1ly/${GIST_ID}/raw/jobs.json`;
+// ══════════════════════════════════════════════════════════════
+
+let allJobs = [];
+let activeFilter = 'all';
+
+// ── Helpers ──────────────────────────────────────────────────
+function fmt(date) {
+  if (!date) return '—';
+  const d = new Date(date);
+  return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function scoreColor(score) {
+  if (score >= 80) return '#1e8449';
+  if (score >= 60) return '#117a8b';
+  return '#2e86c1';
+}
+
+function matchTag(score) {
+  if (score >= 80) return '<span class="tag match-high">⭐ Alta coincidencia</span>';
+  if (score >= 60) return '<span class="tag match-med">✓ Buena coincidencia</span>';
+  return '<span class="tag">Coincidencia parcial</span>';
+}
+
+function categoryFilter(job) {
+  const cat = (job.categoria || '').toLowerCase();
+  const title = (job.cargo || '').toLowerCase();
+  const all = cat + ' ' + title;
+  if (activeFilter === 'all') return true;
+  if (activeFilter === 'analytics') return /analytic|bi|dato|data|sql|power bi|inteligencia de negocio/.test(all);
+  if (activeFilter === 'telecom') return /teleco|regulac|concesi|subtel|wom|claro|entel|movistar/.test(all);
+  if (activeFilter === 'operaciones') return /operac|contrat|proyecto|activo|manten|licitac/.test(all);
+  if (activeFilter === 'ia') return /ia|inteligencia artificial|analytics|machine learning|gesti/.test(all);
+  return true;
+}
+
+function initials(name) {
+  return (name || '?').replace(/\bS\.?A\.?S?\.?\b/gi,'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() || '?';
+}
+
+function logoColor(name) {
+  const colors = ['#1a5276','#117a8b','#1e8449','#6c3483','#784212','#1a252f'];
+  let h = 0; for (const c of (name||'')) h = (h*31+c.charCodeAt(0))%colors.length;
+  return colors[h];
+}
+
+// ── Render ────────────────────────────────────────────────────
+function renderJob(job) {
+  const score = job.match_score || 70;
+  const hasPdf = !!job.cv_pdf_url;
+  const skillTags = (job.skills_match || []).map(s =>
+    `<span class="tag">${s}</span>`).join(' ');
+  const bgColor = logoColor(job.empresa);
+
+  return `
+  <div class="job-card" data-id="${job.id}" data-cat="${job.categoria||''}">
+    <div class="job-card-header">
+      <div class="company-logo" style="background:${bgColor}">${initials(job.empresa)}</div>
+      <div class="job-info">
+        <div class="job-title-text">${job.cargo}</div>
+        <div class="job-company-name">${job.empresa}</div>
+        <div class="job-meta">
+          <span>📍 ${job.ubicacion || 'Chile'}</span>
+          ${job.modalidad ? `<span>🏠 ${job.modalidad}</span>` : ''}
+          ${job.renta ? `<span>💰 ${job.renta}</span>` : ''}
+          <span>📅 ${fmt(job.fecha_publicacion)}</span>
+        </div>
+      </div>
+      ${matchTag(score)}
+    </div>
+    <div class="job-card-body">
+      <div class="job-description">${job.descripcion || ''}</div>
+      ${skillTags ? `<div class="job-match-section">
+        <div class="match-label">Competencias que coinciden</div>
+        <div class="match-skills">${skillTags}</div>
+      </div>` : ''}
+    </div>
+    <div class="job-card-footer">
+      <div class="match-score">
+        <div class="score-bar-wrap">
+          <div class="score-bar" style="width:${score}%;background:${scoreColor(score)}"></div>
+        </div>
+        <span class="score-text">${score}% match</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${job.url ? `<a class="btn btn-secondary" href="${job.url}" target="_blank" rel="noopener">🔗 Ver oferta</a>` : ''}
+        ${hasPdf
+          ? `<a class="btn btn-pdf" href="${job.cv_pdf_url}" target="_blank" rel="noopener" download>📄 Descargar CV adaptado</a>`
+          : `<button class="btn btn-pdf" disabled title="CV en preparación">⏳ CV no disponible</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderJobs(jobs) {
+  const grid = document.getElementById('jobsGrid');
+  if (!jobs.length) {
+    grid.innerHTML = `<div class="state-card">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">Sin resultados para este filtro</div>
+      <div class="state-text">Prueba otro filtro o revisa mañana con la nueva búsqueda.</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = jobs.map(renderJob).join('');
+  document.getElementById('jobCount').textContent = `${jobs.length} empleo${jobs.length !== 1 ? 's' : ''}`;
+}
+
+function applyFilter() {
+  const filtered = allJobs.filter(categoryFilter);
+  renderJobs(filtered);
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+function updateStats(jobs, meta) {
+  document.getElementById('statTotal').textContent = jobs.length;
+  document.getElementById('statHigh').textContent = jobs.filter(j => (j.match_score||0) >= 80).length;
+  document.getElementById('statPdf').textContent = jobs.filter(j => j.cv_pdf_url).length;
+  const upd = meta && meta.generated_at ? fmt(meta.generated_at) : '—';
+  document.getElementById('statUpdated').textContent = upd;
+  if (meta && meta.generated_at) {
+    document.getElementById('navDate').textContent = `Actualizado: ${fmt(meta.generated_at)}`;
+  }
+}
+
+// ── Fetch data ────────────────────────────────────────────────
+async function loadJobs() {
+  if (!GIST_ID || GIST_ID === 'REEMPLAZAR_CON_TU_GIST_ID') {
+    showSampleData();
+    return;
+  }
+  try {
+    const r = await fetch(DATA_URL + '?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    allJobs = data.jobs || [];
+    allJobs.sort((a, b) => (b.match_score||0) - (a.match_score||0));
+    updateStats(allJobs, data.meta || {});
+    applyFilter();
+  } catch (e) {
+    document.getElementById('jobsGrid').innerHTML = `<div class="state-card">
+      <div class="state-icon">⚠️</div>
+      <div class="state-title">Error al cargar datos</div>
+      <div class="state-text">No se pudo obtener las oportunidades. La tarea diaria puede estar en proceso.<br><small style="color:#aaa">${e.message}</small></div>
+    </div>`;
+  }
+}
+
+function showSampleData() {
+  // Demo — se reemplaza con datos reales del Gist
+  allJobs = [
+    {
+      id: 'demo-1',
+      cargo: 'Analista de Regulación Telecomunicaciones',
+      empresa: 'WOM Chile',
+      ubicacion: 'Santiago (Remoto)',
+      modalidad: 'Híbrido',
+      renta: '$2.500.000 – $3.200.000',
+      fecha_publicacion: new Date().toISOString(),
+      descripcion: 'Buscamos profesional para análisis y seguimiento de procesos regulatorios ante SUBTEL, gestión de concesiones y reportería de cumplimiento normativo.',
+      match_score: 92,
+      skills_match: ['Regulación telecomunicaciones', 'SUBTEL', 'Gestión de contratos', 'Reportería ejecutiva'],
+      categoria: 'telecom',
+      url: '#',
+      cv_pdf_url: null
+    },
+    {
+      id: 'demo-2',
+      cargo: 'Analista BI & Analytics',
+      empresa: 'Entel',
+      ubicacion: 'Santiago',
+      modalidad: 'Presencial',
+      renta: '$2.200.000 – $2.800.000',
+      fecha_publicacion: new Date().toISOString(),
+      descripcion: 'Área de datos busca analista con experiencia en Power BI, SQL y análisis de datos para soporte en toma de decisiones estratégicas.',
+      match_score: 85,
+      skills_match: ['Power BI', 'SQL', 'Análisis de datos', 'MBA'],
+      categoria: 'analytics',
+      url: '#',
+      cv_pdf_url: null
+    },
+    {
+      id: 'demo-3',
+      cargo: 'Jefe de Proyectos y Contratos',
+      empresa: 'Andean Telecom Partners',
+      ubicacion: 'Santiago',
+      modalidad: 'Presencial',
+      renta: '$3.000.000 – $4.000.000',
+      fecha_publicacion: new Date().toISOString(),
+      descripcion: 'Gestión integral de contratos, licitaciones y proyectos de infraestructura crítica, coordinación de proveedores y equipos multidisciplinarios.',
+      match_score: 88,
+      skills_match: ['Administración de contratos', 'Licitaciones', 'CAPEX/OPEX', 'Infraestructura'],
+      categoria: 'operaciones',
+      url: '#',
+      cv_pdf_url: null
+    }
+  ];
+  updateStats(allJobs, { generated_at: new Date().toISOString() });
+  document.getElementById('navDate').textContent = '(modo demo)';
+  applyFilter();
+}
+
+// ── Filters ───────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────────
+document.getElementById('navDate').textContent = new Date().toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+loadJobs();
+</script>
+</body>
+</html>
