@@ -406,7 +406,7 @@ function renderJob(job) {
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${job.url ? `<a class="btn btn-secondary" href="${job.url}" target="_blank" rel="noopener">🔗 Ver oferta</a>` : ''}
         ${hasPdf
-          ? `<a class="btn btn-pdf" href="${job.cv_pdf_url}" target="_blank" rel="noopener" download>📄 Descargar CV adaptado</a>`
+          ? `<a class="btn btn-pdf" href="${job.cv_pdf_url}" download>📄 Descargar CV adaptado</a>`
           : `<button class="btn btn-pdf" disabled title="CV en preparación">⏳ CV no disponible</button>`}
       </div>
     </div>
